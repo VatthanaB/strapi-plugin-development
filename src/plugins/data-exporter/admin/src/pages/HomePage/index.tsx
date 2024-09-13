@@ -51,10 +51,14 @@ const HomePage: React.FC = () => {
         if (response.ok) {
           const data = await response.json();
 
-          // Check if data is not undefined or null
-          if (data && Array.isArray(data)) {
-            setContentTypes(data); // Set only the filtered content types
-            console.log("Fetched content types:", data); // Log the filtered content types
+          // Filter out content types that are not visible
+          const visibleContentTypes = data.filter(
+            (contentType: any) => contentType.schema.visible
+          );
+
+          if (visibleContentTypes && Array.isArray(visibleContentTypes)) {
+            setContentTypes(visibleContentTypes); // Set only the visible content types
+            console.log("Fetched visible content types:", visibleContentTypes);
           } else {
             console.error("Unexpected data format:", data);
           }
@@ -75,7 +79,6 @@ const HomePage: React.FC = () => {
 
     initialize();
   }, []); // Empty dependency array means it runs once on component mount
-
   // Helper function to capitalize the first letter of a string
   const capitalize = (str: string) =>
     str.charAt(0).toUpperCase() + str.slice(1);
