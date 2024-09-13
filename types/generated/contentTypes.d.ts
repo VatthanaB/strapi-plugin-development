@@ -369,6 +369,7 @@ export interface ApiTestContentTypeTestContentType
     singularName: 'test-content-type';
     pluralName: 'test-content-types';
     displayName: 'test-content-type';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -377,6 +378,11 @@ export interface ApiTestContentTypeTestContentType
     title: Attribute.String;
     number: Attribute.Integer;
     isValid: Attribute.Boolean;
+    repeatableComponent: Attribute.Component<
+      'plugin-development.nested-component',
+      true
+    >;
+    singleComponent: Attribute.Component<'plugin-development.nested-component'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

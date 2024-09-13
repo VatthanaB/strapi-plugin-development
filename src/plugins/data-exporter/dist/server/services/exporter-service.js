@@ -5,11 +5,49 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("@strapi/utils");
 const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
+dotenv_1.default.config(); // Helper function to recursively transform boolean values
 exports.default = ({ strapi }) => ({
     // Method to export entries of any specified model to CSV
-    async exportToCSV() {
+    async exportEntryDatas() {
         var _a;
+        // Helper function to transform a single date into NZ readable format
+        function transformDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString("en-NZ", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+            });
+        }
+        // Helper function to recursively transform boolean values and dates
+        function transformData(obj) {
+            if (Array.isArray(obj)) {
+                return obj.map(transformData); // Recursively handle arrays
+            }
+            else if (obj !== null && typeof obj === "object") {
+                return Object.keys(obj).reduce((acc, key) => {
+                    if (typeof obj[key] === "boolean") {
+                        acc[key] = obj[key] ? "Yes" : "No"; // Convert boolean to "Yes"/"No"
+                    }
+                    else if (typeof obj[key] === "string" &&
+                        !isNaN(Date.parse(obj[key]))) {
+                        acc[key] = transformDate(obj[key]); // Use transformDate function for date strings
+                    }
+                    else if (Array.isArray(obj[key]) || typeof obj[key] === "object") {
+                        acc[key] = transformData(obj[key]); // Recursively transform nested objects/arrays
+                    }
+                    else {
+                        acc[key] = obj[key]; // Keep the original value if not a boolean or object
+                    }
+                    return acc;
+                }, {});
+            }
+            return obj;
+        }
         const ctx = strapi.requestContext.get();
         const { modelName } = ctx.request.body;
         console.log(modelName);
@@ -19,11 +57,14 @@ exports.default = ({ strapi }) => ({
         }
         try {
             // Fetch entries for the specified model
-            const entries = await ((_a = strapi.entityService) === null || _a === void 0 ? void 0 : _a.findMany(modelName));
-            // If no entries found, throw a validation error
+            let entries = await ((_a = strapi.entityService) === null || _a === void 0 ? void 0 : _a.findMany(modelName));
+            console;
+            // If no ent ries found, throw a validation error
             if (!entries || entries.length === 0) {
                 throw new utils_1.errors.ValidationError(`No data found for model: ${modelName}`);
             }
+            console.log("entries", entries);
+            entries = entries.map((entry) => transformData(entry)); // Transform boolean values
             // Return entries as JSON
             ctx.body = entries;
         }

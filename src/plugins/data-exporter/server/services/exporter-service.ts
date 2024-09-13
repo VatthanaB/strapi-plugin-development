@@ -5,10 +5,49 @@ import { errors } from "@strapi/utils";
 import dotenv from "dotenv";
 import { ContentType } from "../../Interfaces/interfaces/contenType";
 
-dotenv.config();
+dotenv.config(); // Helper function to recursively transform boolean values
+
 export default ({ strapi }: { strapi: Strapi }) => ({
   // Method to export entries of any specified model to CSV
-  async exportToCSV() {
+  async exportEntryDatas() {
+    // Helper function to transform a single date into NZ readable format
+    function transformDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString("en-NZ", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+    }
+
+    // Helper function to recursively transform boolean values and dates
+    function transformData(obj) {
+      if (Array.isArray(obj)) {
+        return obj.map(transformData); // Recursively handle arrays
+      } else if (obj !== null && typeof obj === "object") {
+        return Object.keys(obj).reduce((acc, key) => {
+          if (typeof obj[key] === "boolean") {
+            acc[key] = obj[key] ? "Yes" : "No"; // Convert boolean to "Yes"/"No"
+          } else if (
+            typeof obj[key] === "string" &&
+            !isNaN(Date.parse(obj[key]))
+          ) {
+            acc[key] = transformDate(obj[key]); // Use transformDate function for date strings
+          } else if (Array.isArray(obj[key]) || typeof obj[key] === "object") {
+            acc[key] = transformData(obj[key]); // Recursively transform nested objects/arrays
+          } else {
+            acc[key] = obj[key]; // Keep the original value if not a boolean or object
+          }
+          return acc;
+        }, {});
+      }
+      return obj;
+    }
+
     const ctx = strapi.requestContext.get() as any;
     const { modelName } = ctx.request.body;
 
@@ -20,15 +59,16 @@ export default ({ strapi }: { strapi: Strapi }) => ({
 
     try {
       // Fetch entries for the specified model
-      const entries = await strapi.entityService?.findMany(modelName);
-
-      // If no entries found, throw a validation error
+      let entries = await strapi.entityService?.findMany(modelName);
+      console;
+      // If no ent ries found, throw a validation error
       if (!entries || entries.length === 0) {
         throw new errors.ValidationError(
           `No data found for model: ${modelName}`
         );
       }
-
+      console.log("entries", entries);
+      entries = entries.map((entry) => transformData(entry)); // Transform boolean values
       // Return entries as JSON
       ctx.body = entries;
     } catch (error) {
@@ -44,7 +84,7 @@ export default ({ strapi }: { strapi: Strapi }) => ({
     // Ensure the base URL is defined; you might need to fetch this dynamically
     const baseUrl = process.env.STRAPI_BASE_URL || "http://127.0.0.1:1337"; // Replace with your actual base URL
 
-    const fetchToken = process.env.FETCH_TOKEN;
+    const fetchToken = process.env.DATA_EXPORTER_TOKEN;
 
     const response = await fetch(
       `${baseUrl}/api/content-type-builder/content-types`,

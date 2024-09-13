@@ -2,7 +2,7 @@ import { Strapi } from "@strapi/strapi";
 
 export default ({ strapi }: { strapi: Strapi }) => ({
   // Generic export method for any model
-  async export(ctx: any) {
+  async exportEntryDatas(ctx: any) {
     const { model } = ctx.params; // Extract model name from request parameters
 
     try {
@@ -10,7 +10,7 @@ export default ({ strapi }: { strapi: Strapi }) => ({
       const data = await strapi
         .plugin("data-exporter")
         .service("exporter")
-        .exportToCSV(model);
+        .exportEntryDatas(model);
       return data; // Return the CSV data
     } catch (error) {
       console.error("Error exporting CSV:", error); // Log any error encountered

@@ -1,0 +1,12 @@
+{
+  "collectionName": "components_plugin_development_nested_components",
+  "info": {
+    "displayName": "nestedComponent"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    }
+  }
+}

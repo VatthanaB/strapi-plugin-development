@@ -3,8 +3,8 @@ import path from "path";
 export default [
   {
     method: "POST",
-    path: "/export/csv",
-    handler: "exporter.export", // Handles the export of generic CSV data
+    path: "/export/get-entries",
+    handler: "exporter.exportEntryDatas", // Handles the export of generic CSV data
     config: {
       policies: [], // No policies applied to this route
     },

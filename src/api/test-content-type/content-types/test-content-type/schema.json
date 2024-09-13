@@ -4,7 +4,8 @@
   "info": {
     "singularName": "test-content-type",
     "pluralName": "test-content-types",
-    "displayName": "test-content-type"
+    "displayName": "test-content-type",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -19,6 +20,16 @@
     },
     "isValid": {
       "type": "boolean"
+    },
+    "repeatableComponent": {
+      "type": "component",
+      "repeatable": true,
+      "component": "plugin-development.nested-component"
+    },
+    "singleComponent": {
+      "type": "component",
+      "repeatable": false,
+      "component": "plugin-development.nested-component"
     }
   }
 }

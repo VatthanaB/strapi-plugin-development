@@ -135,7 +135,7 @@ const HomePage: React.FC = () => {
       try {
         let response;
 
-        response = await request(`/${pluginId}/export/csv`, {
+        response = await request(`/${pluginId}/export/get-entries`, {
           method: "POST",
           body: {
             modelName: selectedContentType,

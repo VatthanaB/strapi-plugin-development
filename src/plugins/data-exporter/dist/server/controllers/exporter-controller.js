@@ -2,14 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ({ strapi }) => ({
     // Generic export method for any model
-    async export(ctx) {
+    async exportEntryDatas(ctx) {
         const { model } = ctx.params; // Extract model name from request parameters
         try {
             // Call the service to export the specified model to CSV
             const data = await strapi
                 .plugin("data-exporter")
                 .service("exporter")
-                .exportToCSV(model);
+                .exportEntryDatas(model);
             return data; // Return the CSV data
         }
         catch (error) {

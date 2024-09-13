@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = [
     {
         method: "POST",
-        path: "/export/csv",
-        handler: "exporter.export",
+        path: "/export/get-entries",
+        handler: "exporter.exportEntryDatas",
         config: {
             policies: [], // No policies applied to this route
         },
