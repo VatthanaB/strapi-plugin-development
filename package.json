@@ -10,6 +10,7 @@
   "scripts": {
     "build": "strapi build ",
     "buildPlugin": "cd ./src/plugins/data-exporter && npm run build",
+    "predevelop": "cd ./src/plugins/data-exporter && npm run build",
     "develop": "strapi develop",
     "prerailway": "cd ./src/plugins/data-exporter && npm run build",
     "railway": "railway run yarn run develop --watch-admin",
