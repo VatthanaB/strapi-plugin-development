@@ -1,11 +1,7 @@
 import { Strapi } from "@strapi/strapi";
 import { Context } from "koa";
 import { errors } from "@strapi/utils";
-import { IUserSubmission } from "../../Interfaces/interfaces/user-submission";
-import { IUser } from "../../Interfaces/interfaces/user";
-import { IChallenge } from "../../Interfaces/interfaces/challenge";
-import { ISponsor } from "../../Interfaces/interfaces/sponsor";
-import res from "express/lib/response";
+
 import dotenv from "dotenv";
 import { ContentType } from "../../Interfaces/interfaces/contenType";
 
@@ -69,6 +65,7 @@ export default ({ strapi }: { strapi: Strapi }) => ({
         (contentType: any) =>
           contentType.uid !== "admin::permission" &&
           contentType.uid !== "admin::role" &&
+          contentType.uid !== "admin::user" &&
           contentType.uid !== "admin::api-token" &&
           contentType.uid !== "admin::api-token-permission" &&
           contentType.uid !== "admin::transfer-token" &&
@@ -79,7 +76,6 @@ export default ({ strapi }: { strapi: Strapi }) => ({
           contentType.uid !== "plugin::content-releases.release-action" &&
           contentType.uid !== "plugin::users-permissions.permission" &&
           contentType.uid !== "plugin::users-permissions.role" &&
-          contentType.uid !== "plugin::users-permissions.user" &&
           contentType.uid !== "plugin::i18n.locale"
       );
 

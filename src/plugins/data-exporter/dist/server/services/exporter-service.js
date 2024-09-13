@@ -50,6 +50,7 @@ exports.default = ({ strapi }) => ({
             // Remove the specific content types
             const filteredData = data.data.filter((contentType) => contentType.uid !== "admin::permission" &&
                 contentType.uid !== "admin::role" &&
+                contentType.uid !== "admin::user" &&
                 contentType.uid !== "admin::api-token" &&
                 contentType.uid !== "admin::api-token-permission" &&
                 contentType.uid !== "admin::transfer-token" &&
@@ -60,7 +61,6 @@ exports.default = ({ strapi }) => ({
                 contentType.uid !== "plugin::content-releases.release-action" &&
                 contentType.uid !== "plugin::users-permissions.permission" &&
                 contentType.uid !== "plugin::users-permissions.role" &&
-                contentType.uid !== "plugin::users-permissions.user" &&
                 contentType.uid !== "plugin::i18n.locale");
             return filteredData;
         }
