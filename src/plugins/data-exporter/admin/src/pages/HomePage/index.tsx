@@ -62,6 +62,7 @@ const HomePage: React.FC = () => {
 
     const initialize = async () => {
       await fetchContentTypes();
+
       console.log("Content types fetched successfully!");
     };
 
@@ -164,7 +165,7 @@ const HomePage: React.FC = () => {
       }
     };
     fetchData();
-  }, [selectedContentType, challengeId]);
+  }, [selectedContentType, challengeId, contentTypes]);
 
   const handleDownload = () => {
     const csvData = jsonToCsv(data);
