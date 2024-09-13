@@ -50,10 +50,18 @@ const HomePage: React.FC = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setContentTypes(data); // Set only the filtered content types
-          console.log(data); // Log the filtered content types
+
+          // Check if data is not undefined or null
+          if (data && Array.isArray(data)) {
+            setContentTypes(data); // Set only the filtered content types
+            console.log("Fetched content types:", data); // Log the filtered content types
+          } else {
+            console.error("Unexpected data format:", data);
+          }
         } else {
-          console.error(`Error: ${response.statusText}`);
+          console.error(
+            `Fetch error: ${response.status} - ${response.statusText}`
+          );
         }
       } catch (error) {
         console.error("Failed to fetch content types:", error);
@@ -62,7 +70,6 @@ const HomePage: React.FC = () => {
 
     const initialize = async () => {
       await fetchContentTypes();
-
       console.log("Content types fetched successfully!");
     };
 
