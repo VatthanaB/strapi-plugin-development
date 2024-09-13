@@ -236,7 +236,7 @@ const HomePage: React.FC = () => {
             >
               {contentTypes.map((contentType) => (
                 <Option key={contentType.uid} value={contentType.uid}>
-                  {contentType.apiID}
+                  {contentType.schema.displayName || contentType.apiID}
                 </Option>
               ))}
             </Select>
