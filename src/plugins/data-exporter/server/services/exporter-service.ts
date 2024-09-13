@@ -6,7 +6,9 @@ import { IUser } from "../../Interfaces/interfaces/user";
 import { IChallenge } from "../../Interfaces/interfaces/challenge";
 import { ISponsor } from "../../Interfaces/interfaces/sponsor";
 import res from "express/lib/response";
+import dotenv from "dotenv";
 
+dotenv.config();
 export default ({ strapi }: { strapi: Strapi }) => ({
   // Method to export entries of any specified model to CSV
   async exportToCSV() {
@@ -50,7 +52,7 @@ export default ({ strapi }: { strapi: Strapi }) => ({
       {
         method: "GET",
         headers: {
-          Authorization: `Bearer 11703591363602973460d2c0fae9ebb6bd6cb319629f5106049512c6230ad6e5d9e304d6f2f99d552515f6eb95b6283dcc0d90ac53f75255b79c592b9f49c60aa54ab37964cebe9ee88302739b56891567bdee18a231f14883fb9e0ab227d9cae3d4e2110e25c10aee09ff154cd255651daf71981322a5fe97866c79ba9330ec`,
+          Authorization: `Bearer ${process.env.FETCH_TOKEN}`,
           "Content-Type": "application/json",
         },
       }
