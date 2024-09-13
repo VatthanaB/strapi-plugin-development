@@ -46,13 +46,14 @@ export default ({ strapi }: { strapi: Strapi }) => ({
 
     // Ensure the base URL is defined; you might need to fetch this dynamically
     const baseUrl = process.env.STRAPI_BASE_URL || "http://127.0.0.1:1337"; // Replace with your actual base URL
-
+    const fetchToken = process.env.FETCH_TOKEN;
+    console.log(fetchToken);
     const response = await fetch(
       `${baseUrl}/api/content-type-builder/content-types`,
       {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${process.env.FETCH_TOKEN}`,
+          Authorization: `Bearer ${fetchToken}`,
           "Content-Type": "application/json",
         },
       }
