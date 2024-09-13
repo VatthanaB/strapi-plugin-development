@@ -7,4 +7,4 @@ var SubmissionMediaEnum;
     SubmissionMediaEnum["Video"] = "Video";
     SubmissionMediaEnum["Audio"] = "Audio";
     SubmissionMediaEnum["Document"] = "Document";
-})(SubmissionMediaEnum || (exports.SubmissionMediaEnum = SubmissionMediaEnum = {}));
+})(SubmissionMediaEnum = exports.SubmissionMediaEnum || (exports.SubmissionMediaEnum = {}));

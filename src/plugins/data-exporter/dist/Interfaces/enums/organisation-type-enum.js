@@ -7,4 +7,4 @@ var OrganisationTypeEnum;
     OrganisationTypeEnum["NPO"] = "npo";
     OrganisationTypeEnum["SMME"] = "smme";
     OrganisationTypeEnum["Corporate"] = "corporate";
-})(OrganisationTypeEnum || (exports.OrganisationTypeEnum = OrganisationTypeEnum = {}));
+})(OrganisationTypeEnum = exports.OrganisationTypeEnum || (exports.OrganisationTypeEnum = {}));

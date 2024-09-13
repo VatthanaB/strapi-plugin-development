@@ -9,4 +9,4 @@ var SubmissionStateEnum;
     SubmissionStateEnum["REJECTED"] = "rejected";
     SubmissionStateEnum["ACCEPTED"] = "accepted";
     SubmissionStateEnum["REWARDED"] = "rewarded";
-})(SubmissionStateEnum || (exports.SubmissionStateEnum = SubmissionStateEnum = {}));
+})(SubmissionStateEnum = exports.SubmissionStateEnum || (exports.SubmissionStateEnum = {}));

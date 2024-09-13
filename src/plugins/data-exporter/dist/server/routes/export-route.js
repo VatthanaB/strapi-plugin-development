@@ -10,9 +10,9 @@ exports.default = [
         },
     },
     {
-        method: "POST",
-        path: "/export/submissions",
-        handler: "exporter.exportSubmissionToCSV",
+        method: "GET",
+        path: "/export/get-content-types",
+        handler: "exporter.getAllContentTypes",
         config: {
             policies: [], // No policies applied to this route
         },
@@ -21,22 +21,6 @@ exports.default = [
         method: "POST",
         path: "/export/users",
         handler: "exporter.exportUsersToCSV",
-        config: {
-            policies: [], // No policies applied to this route
-        },
-    },
-    {
-        method: "POST",
-        path: "/export/challenges",
-        handler: "exporter.exportChallengesToCSV",
-        config: {
-            policies: [], // No policies applied to this route
-        },
-    },
-    {
-        method: "POST",
-        path: "/export/sponsors",
-        handler: "exporter.exportSponsorsToCSV",
         config: {
             policies: [], // No policies applied to this route
         },

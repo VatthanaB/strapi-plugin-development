@@ -37,15 +37,80 @@ const HomePage: React.FC = () => {
   const [modalTitle, setModalTitle] = useState<string>("");
   const [sortField, setSortField] = useState<string>(""); // Track current sort field
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // Track current sort order
+  const [contentTypes, setContentTypes] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchContentTypes = async () => {
+      try {
+        const response = await request(
+          `/${pluginId}/export/get-content-types`,
+          {
+            method: "GET",
+          }
+        );
 
-  // Helper function to convert JSON data to CSV format
+        if (response.ok) {
+          const data = await response.json();
+          setContentTypes(data); // Set only the filtered content types
+          console.log(data); // Log the filtered content types
+        } else {
+          console.error(`Error: ${response.statusText}`);
+        }
+      } catch (error) {
+        console.error("Failed to fetch content types:", error);
+      }
+    };
+
+    const initialize = async () => {
+      await fetchContentTypes();
+      console.log("Content types fetched successfully!");
+    };
+
+    initialize();
+  }, []); // Empty dependency array means it runs once on component mount
+
+  // Helper function to capitalize the first letter of a string
+  const capitalize = (str: string) =>
+    str.charAt(0).toUpperCase() + str.slice(1);
+
+  // Helper function to flatten nested JSON objects, format keys as User-Address, and exclude 'id' fields
+  const flattenObject = (obj: any, parent: string = "", res: any = {}) => {
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        // Skip 'id' fields
+        if (key.toLowerCase() === "id") {
+          continue;
+        }
+
+        const propName = parent
+          ? `${parent}-${capitalize(key)}`
+          : capitalize(key); // Use hyphen instead of dot
+        if (
+          typeof obj[key] === "object" &&
+          obj[key] !== null &&
+          !Array.isArray(obj[key])
+        ) {
+          flattenObject(obj[key], propName, res); // Recursively flatten nested objects
+        } else {
+          res[propName] = obj[key]; // Assign the value to the result object
+        }
+      }
+    }
+    return res;
+  };
+  // Helper function to convert JSON data to CSV format (supports nested objects)
   const jsonToCsv = (jsonData: any) => {
     if (!Array.isArray(jsonData) || jsonData.length === 0) {
       return null;
     }
 
-    const headers = Object.keys(jsonData[0]);
-    const csvRows = jsonData.map((row) =>
+    // Flatten all objects in the array
+    const flattenedData = jsonData.map((row: any) => flattenObject(row));
+
+    // Extract headers from the first flattened row
+    const headers = Object.keys(flattenedData[0]);
+
+    // Map rows to CSV format
+    const csvRows = flattenedData.map((row: any) =>
       headers
         .map((field) => {
           const value = row[field] ? row[field].toString() : "";
@@ -54,6 +119,7 @@ const HomePage: React.FC = () => {
         .join(",")
     );
 
+    // Return headers and CSV rows
     return [headers.join(","), ...csvRows].join("\n");
   };
 
@@ -66,45 +132,21 @@ const HomePage: React.FC = () => {
       try {
         let response;
 
-        if (selectedContentType === "users") {
-          response = await request(`/${pluginId}/export/users`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-        }
-
-        if (selectedContentType === "submissions" && challengeId !== null) {
-          response = await request(`/${pluginId}/export/submissions`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: { challengeId },
-          });
-        }
-
-        if (selectedContentType === "challenges") {
-          response = await request(`/${pluginId}/export/challenges`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-        }
-
-        if (selectedContentType === "sponsors") {
-          response = await request(`/${pluginId}/export/sponsors`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-        }
+        response = await request(`/${pluginId}/export/csv`, {
+          method: "POST",
+          body: {
+            modelName: selectedContentType,
+          },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
         if (response && response.length > 0) {
-          setData(response);
+          const flattenedResponse = response.map((row: any) =>
+            flattenObject(row)
+          ); // Flatten the response
+          setData(flattenedResponse);
           setMessage("Data fetched successfully!");
           setAlertVariant("success");
         } else {
@@ -121,7 +163,6 @@ const HomePage: React.FC = () => {
         setIsFetching(false);
       }
     };
-
     fetchData();
   }, [selectedContentType, challengeId]);
 
@@ -182,10 +223,11 @@ const HomePage: React.FC = () => {
               value={selectedContentType}
               onChange={setSelectedContentType}
             >
-              <Option value="submissions">Submission</Option>
-              <Option value="users">Users</Option>
-              <Option value="challenges">Challenges</Option>
-              <Option value="sponsors">Sponsors</Option>
+              {contentTypes.map((contentType) => (
+                <Option key={contentType.uid} value={contentType.uid}>
+                  {contentType.apiID}
+                </Option>
+              ))}
             </Select>
           </Box>
         </Flex>

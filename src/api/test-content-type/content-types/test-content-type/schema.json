@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "test_content_types",
+  "info": {
+    "singularName": "test-content-type",
+    "pluralName": "test-content-types",
+    "displayName": "test-content-type"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "number": {
+      "type": "integer"
+    },
+    "isValid": {
+      "type": "boolean"
+    }
+  }
+}
