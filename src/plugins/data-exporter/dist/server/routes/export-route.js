@@ -17,12 +17,4 @@ exports.default = [
             policies: [], // No policies applied to this route
         },
     },
-    {
-        method: "POST",
-        path: "/export/users",
-        handler: "exporter.exportUsersToCSV",
-        config: {
-            policies: [], // No policies applied to this route
-        },
-    },
 ];

@@ -17,21 +17,6 @@ exports.default = ({ strapi }) => ({
             ctx.throw(500, "Failed to export CSV"); // Send a 500 error response
         }
     },
-    // Export users to CSV
-    async exportUsersToCSV(ctx) {
-        try {
-            // Call the service to export user data to CSV
-            const data = await strapi
-                .plugin("data-exporter")
-                .service("exporter")
-                .exportUsersToCSV();
-            return data; // Return the CSV data
-        }
-        catch (error) {
-            console.error("Error exporting CSV:", error); // Log any error encountered
-            ctx.throw(500, "Failed to export CSV"); // Send a 500 error response
-        }
-    },
     async getAllContentTypes(ctx) {
         try {
             const data = await strapi

@@ -1,7 +1,7 @@
 module.exports = ({ env }) => ({
+  connection: {
     connection: {
-        connection: {
-            connectionString: env('DATABASE_URL')
-        }
-    }
+      connectionString: env("DATABASE_URL"),
+    },
+  },
 });
