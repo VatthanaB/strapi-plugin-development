@@ -8,7 +8,7 @@
     "name": "A Strapi developer"
   },
   "scripts": {
-    "build": "strapi build && cd ./src/plugins/data-exporter && npm run build",
+    "build": "strapi build ",
     "develop": "strapi develop",
     "prerailway": "cd ./src/plugins/data-exporter && npm run build",
     "railway": "railway run yarn run develop --watch-admin",
