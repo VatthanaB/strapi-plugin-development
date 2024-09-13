@@ -48,20 +48,11 @@ const HomePage: React.FC = () => {
           }
         );
 
-        if (response.ok) {
-          const data = await response.json();
+        console.log("Response:", response);
+        if (response) {
+          const data = response;
 
-          // Filter out content types that are not visible
-          const visibleContentTypes = data.filter(
-            (contentType: any) => contentType.schema.visible
-          );
-
-          if (visibleContentTypes && Array.isArray(visibleContentTypes)) {
-            setContentTypes(visibleContentTypes); // Set only the visible content types
-            console.log("Fetched visible content types:", visibleContentTypes);
-          } else {
-            console.error("Unexpected data format:", data);
-          }
+          setContentTypes(data); // Set only the visible content types
         } else {
           console.error(
             `Fetch error: ${response.status} - ${response.statusText}`
