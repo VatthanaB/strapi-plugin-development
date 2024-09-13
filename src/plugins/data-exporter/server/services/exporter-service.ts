@@ -45,8 +45,8 @@ export default ({ strapi }: { strapi: Strapi }) => ({
     const ctx = strapi.requestContext.get() as Context;
 
     // Ensure the base URL is defined; you might need to fetch this dynamically
-    // const baseUrl = process.env.STRAPI_BASE_URL || "http://127.0.0.1:1337"; // Replace with your actual base URL
-    const baseUrl = "http://127.0.0.1:1337"; // Replace with your actual base URL
+    const baseUrl = process.env.STRAPI_BASE_URL || "http://127.0.0.1:1337"; // Replace with your actual base URL
+
     const fetchToken = process.env.FETCH_TOKEN;
 
     const response = await fetch(
