@@ -21,6 +21,7 @@ import {
 import { Alert } from "@strapi/design-system/Alert";
 import { TextButton } from "@strapi/design-system/TextButton";
 import pluginId from "../../pluginId";
+import { ContentType } from "../../../../Interfaces/interfaces/contenType";
 
 const HomePage: React.FC = () => {
   const [selectedContentType, setSelectedContentType] = useState<string>("");
@@ -50,7 +51,7 @@ const HomePage: React.FC = () => {
 
         console.log("Response:", response);
         if (response) {
-          const data = response;
+          const data: ContentType[] = response;
 
           setContentTypes(data); // Set only the visible content types
         } else {

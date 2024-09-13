@@ -7,6 +7,7 @@ import { IChallenge } from "../../Interfaces/interfaces/challenge";
 import { ISponsor } from "../../Interfaces/interfaces/sponsor";
 import res from "express/lib/response";
 import dotenv from "dotenv";
+import { ContentType } from "../../Interfaces/interfaces/contenType";
 
 dotenv.config();
 export default ({ strapi }: { strapi: Strapi }) => ({
@@ -64,7 +65,7 @@ export default ({ strapi }: { strapi: Strapi }) => ({
       const data: any = await response.json();
 
       // Remove the specific content types
-      const filteredData = data.data.filter(
+      const filteredData: ContentType[] = data.data.filter(
         (contentType: any) =>
           contentType.uid !== "admin::permission" &&
           contentType.uid !== "admin::role" &&
