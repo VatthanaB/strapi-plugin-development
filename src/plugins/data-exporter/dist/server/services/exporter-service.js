@@ -57,8 +57,9 @@ exports.default = ({ strapi }) => ({
         }
         try {
             // Fetch entries for the specified model
-            let entries = await ((_a = strapi.entityService) === null || _a === void 0 ? void 0 : _a.findMany(modelName));
-            console;
+            let entries = await ((_a = strapi.entityService) === null || _a === void 0 ? void 0 : _a.findMany(modelName, {
+                populate: "*", // Populate all fields and relations
+            }));
             // If no ent ries found, throw a validation error
             if (!entries || entries.length === 0) {
                 throw new utils_1.errors.ValidationError(`No data found for model: ${modelName}`);
@@ -78,7 +79,7 @@ exports.default = ({ strapi }) => ({
         const ctx = strapi.requestContext.get();
         // Ensure the base URL is defined; you might need to fetch this dynamically
         const baseUrl = process.env.STRAPI_BASE_URL || "http://127.0.0.1:1337"; // Replace with your actual base URL
-        const fetchToken = process.env.FETCH_TOKEN;
+        const fetchToken = process.env.DATA_EXPORTER_PLUGIN_TOKEN;
         const response = await fetch(`${baseUrl}/api/content-type-builder/content-types`, {
             method: "GET",
             headers: {

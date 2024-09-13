@@ -30,6 +30,12 @@
       "type": "component",
       "repeatable": false,
       "component": "plugin-development.nested-component"
+    },
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "test_content_type"
     }
   }
 }

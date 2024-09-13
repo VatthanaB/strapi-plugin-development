@@ -59,8 +59,10 @@ export default ({ strapi }: { strapi: Strapi }) => ({
 
     try {
       // Fetch entries for the specified model
-      let entries = await strapi.entityService?.findMany(modelName);
-      console;
+      let entries = await strapi.entityService?.findMany(modelName, {
+        populate: "*", // Populate all fields and relations
+      });
+
       // If no ent ries found, throw a validation error
       if (!entries || entries.length === 0) {
         throw new errors.ValidationError(

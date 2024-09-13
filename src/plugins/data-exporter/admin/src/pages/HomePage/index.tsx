@@ -29,7 +29,7 @@ const HomePage: React.FC = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [message, setMessage] = useState<string>("");
   const [csvUrl, setCsvUrl] = useState<string | null>(null);
-  const [challengeId, setChallengeId] = useState<number | null>();
+  const [challengeId, setChallengeId] = useState<number | null>(null);
   const [alertVariant, setAlertVariant] = useState<"success" | "danger">(
     "success"
   );
@@ -39,6 +39,8 @@ const HomePage: React.FC = () => {
   const [sortField, setSortField] = useState<string>(""); // Track current sort field
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // Track current sort order
   const [contentTypes, setContentTypes] = useState<any[]>([]);
+  const [headers, setHeaders] = useState<string[]>([]);
+
   useEffect(() => {
     const fetchContentTypes = async () => {
       try {
@@ -52,7 +54,6 @@ const HomePage: React.FC = () => {
         console.log("Response:", response);
         if (response) {
           const data: ContentType[] = response;
-
           setContentTypes(data); // Set only the visible content types
         } else {
           console.error(
@@ -71,50 +72,66 @@ const HomePage: React.FC = () => {
 
     initialize();
   }, []); // Empty dependency array means it runs once on component mount
+
   // Helper function to capitalize the first letter of a string
   const capitalize = (str: string) =>
     str.charAt(0).toUpperCase() + str.slice(1);
 
-  // Helper function to flatten nested JSON objects, format keys as User-Address, and exclude 'id' fields
-  const flattenObject = (obj: any, parent: string = "", res: any = {}) => {
+  // Helper function to flatten nested JSON objects and arrays
+  type FlattenedObject = {
+    [key: string]: string;
+  };
+
+  const flattenObject = (
+    obj: any,
+    parent: string = "",
+    res: FlattenedObject = {}
+  ): FlattenedObject => {
     for (let key in obj) {
       if (obj.hasOwnProperty(key)) {
-        // Skip 'id' fields
-        if (key.toLowerCase() === "id") {
-          continue;
-        }
-
         const propName = parent
           ? `${parent}-${capitalize(key)}`
-          : capitalize(key); // Use hyphen instead of dot
-        if (
-          typeof obj[key] === "object" &&
-          obj[key] !== null &&
-          !Array.isArray(obj[key])
-        ) {
-          flattenObject(obj[key], propName, res); // Recursively flatten nested objects
+          : capitalize(key);
+
+        if (Array.isArray(obj[key])) {
+          // If the array has elements, flatten each one and avoid setting the original key
+          if (obj[key].length > 0) {
+            obj[key].forEach((element, index) => {
+              if (typeof element === "object" && element !== null) {
+                flattenObject(element, `${propName}-${index + 1}`, res);
+              } else {
+                res[`${propName}${index + 1}`] =
+                  element !== null ? element.toString() : "null";
+              }
+            });
+          } else {
+            // Handle empty arrays by indicating they are empty
+            res[propName] = "[]";
+          }
+        } else if (typeof obj[key] === "object" && obj[key] !== null) {
+          // Nested object
+          flattenObject(obj[key], propName, res);
         } else {
-          res[propName] = obj[key]; // Assign the value to the result object
+          // For non-object and non-array values
+          res[propName] = obj[key] !== null ? obj[key].toString() : "null";
         }
       }
     }
     return res;
   };
+
   // Helper function to convert JSON data to CSV format (supports nested objects)
-  const jsonToCsv = (jsonData: any) => {
+  const jsonToCsv = (jsonData: any, headers: string[]) => {
     if (!Array.isArray(jsonData) || jsonData.length === 0) {
       return null;
     }
 
-    // Flatten all objects in the array
-    const flattenedData = jsonData.map((row: any) => flattenObject(row));
+    // Use headers from state to ensure CSV columns match table columns
+    const uniqueHeaders = Array.from(new Set(headers));
 
-    // Extract headers from the first flattened row
-    const headers = Object.keys(flattenedData[0]);
-
-    // Map rows to CSV format
-    const csvRows = flattenedData.map((row: any) =>
-      headers
+    // Map rows to CSV format using the headers
+    const csvRows = jsonData.map((row: any) =>
+      uniqueHeaders
         .map((field) => {
           const value = row[field] ? row[field].toString() : "";
           return `"${value.replace(/"/g, '""')}"`;
@@ -123,7 +140,7 @@ const HomePage: React.FC = () => {
     );
 
     // Return headers and CSV rows
-    return [headers.join(","), ...csvRows].join("\n");
+    return [uniqueHeaders.join(","), ...csvRows].join("\n");
   };
 
   useEffect(() => {
@@ -133,9 +150,7 @@ const HomePage: React.FC = () => {
       setIsFetching(true);
 
       try {
-        let response;
-
-        response = await request(`/${pluginId}/export/get-entries`, {
+        const response = await request(`/${pluginId}/export/get-entries`, {
           method: "POST",
           body: {
             modelName: selectedContentType,
@@ -146,10 +161,19 @@ const HomePage: React.FC = () => {
         });
 
         if (response && response.length > 0) {
+          console.log("Response:", response);
           const flattenedResponse = response.map((row: any) =>
             flattenObject(row)
-          ); // Flatten the response
+          );
+
+          // Collect unique headers
+          const uniqueHeaders = new Set<string>();
+          flattenedResponse.forEach((row: any) => {
+            Object.keys(row).forEach((header) => uniqueHeaders.add(header));
+          });
+          console.log("flattenedResponse:", flattenedResponse);
           setData(flattenedResponse);
+          setHeaders(Array.from(uniqueHeaders)); // Store headers for rendering
           setMessage("Data fetched successfully!");
           setAlertVariant("success");
         } else {
@@ -170,7 +194,7 @@ const HomePage: React.FC = () => {
   }, [selectedContentType, challengeId, contentTypes]);
 
   const handleDownload = () => {
-    const csvData = jsonToCsv(data);
+    const csvData = jsonToCsv(data, headers);
     if (!csvData) {
       setMessage("Error converting data to CSV.");
       setAlertVariant("danger");
@@ -242,7 +266,7 @@ const HomePage: React.FC = () => {
                 label="Filter by Challenge ID"
                 placeholder="Enter ID..."
                 value={challengeId}
-                onChange={(e: any) => setChallengeId(e.target.value)}
+                onChange={(e: any) => setChallengeId(Number(e.target.value))}
               />
             </Box>
           </Flex>
@@ -265,10 +289,10 @@ const HomePage: React.FC = () => {
 
       {data.length > 0 && (
         <Box paddingTop={4}>
-          <Table colCount={Object.keys(data[0]).length}>
+          <Table colCount={headers.length}>
             <Thead>
               <Tr>
-                {Object.keys(data[0]).map((header) => (
+                {headers.map((header) => (
                   <Th
                     key={header}
                     onClick={() => sortData(header)} // Sort by column on click
@@ -285,7 +309,7 @@ const HomePage: React.FC = () => {
             <Tbody>
               {data.map((row, index) => (
                 <Tr key={index}>
-                  {Object.keys(row).map((field) => (
+                  {headers.map((field) => (
                     <Td
                       key={field}
                       onClick={() => handleOpenModal(row[field], field)}
@@ -297,7 +321,9 @@ const HomePage: React.FC = () => {
                         textOverflow: "ellipsis",
                       }}
                     >
-                      {row[field]}
+                      {typeof row[field] === "object"
+                        ? JSON.stringify(row[field])
+                        : row[field] || "N/A"}
                     </Td>
                   ))}
                 </Tr>

@@ -383,6 +383,11 @@ export interface ApiTestContentTypeTestContentType
       true
     >;
     singleComponent: Attribute.Component<'plugin-development.nested-component'>;
+    users_permissions_user: Attribute.Relation<
+      'api::test-content-type.test-content-type',
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -762,6 +767,11 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'plugin::users-permissions.user',
       'manyToOne',
       'plugin::users-permissions.role'
+    >;
+    test_content_type: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToOne',
+      'api::test-content-type.test-content-type'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
